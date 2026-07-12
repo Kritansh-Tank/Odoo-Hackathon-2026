@@ -137,11 +137,59 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) — you'll be redirected to the login page.
 
-**Default credentials (from seed data):**
+### 👤 Demo Credentials
+
+The seed script creates **one admin account** by default:
+
+| Role | Email | Password |
+|------|-------|----------|
+| **Admin** | `admin@transitops.com` | `Admin@123` |
+
+To create demo accounts for the other roles, run this SQL in your **Supabase SQL Editor**:
+
+```sql
+DO $$
+DECLARE
+  fm_uid   UUID := gen_random_uuid();
+  dr_uid   UUID := gen_random_uuid();
+  so_uid   UUID := gen_random_uuid();
+  fa_uid   UUID := gen_random_uuid();
+BEGIN
+  -- Fleet Manager
+  INSERT INTO auth.users (id, instance_id, aud, role, email, encrypted_password, email_confirmed_at, created_at, updated_at, raw_app_meta_data, raw_user_meta_data, is_super_admin, confirmation_token, recovery_token, email_change_token_new, email_change)
+  VALUES (fm_uid, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'manager@transitops.com', crypt('Manager@123', gen_salt('bf')), NOW(), NOW(), NOW(), '{"provider":"email","providers":["email"]}', '{"full_name":"Fleet Manager"}', FALSE, '', '', '', '');
+  INSERT INTO profiles (id, full_name, email, role) VALUES (fm_uid, 'Fleet Manager', 'manager@transitops.com', 'fleet_manager') ON CONFLICT (id) DO NOTHING;
+
+  -- Driver
+  INSERT INTO auth.users (id, instance_id, aud, role, email, encrypted_password, email_confirmed_at, created_at, updated_at, raw_app_meta_data, raw_user_meta_data, is_super_admin, confirmation_token, recovery_token, email_change_token_new, email_change)
+  VALUES (dr_uid, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'driver@transitops.com', crypt('Driver@123', gen_salt('bf')), NOW(), NOW(), NOW(), '{"provider":"email","providers":["email"]}', '{"full_name":"Demo Driver"}', FALSE, '', '', '', '');
+  INSERT INTO profiles (id, full_name, email, role) VALUES (dr_uid, 'Demo Driver', 'driver@transitops.com', 'driver') ON CONFLICT (id) DO NOTHING;
+
+  -- Safety Officer
+  INSERT INTO auth.users (id, instance_id, aud, role, email, encrypted_password, email_confirmed_at, created_at, updated_at, raw_app_meta_data, raw_user_meta_data, is_super_admin, confirmation_token, recovery_token, email_change_token_new, email_change)
+  VALUES (so_uid, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'safety@transitops.com', crypt('Safety@123', gen_salt('bf')), NOW(), NOW(), NOW(), '{"provider":"email","providers":["email"]}', '{"full_name":"Safety Officer"}', FALSE, '', '', '', '');
+  INSERT INTO profiles (id, full_name, email, role) VALUES (so_uid, 'Safety Officer', 'safety@transitops.com', 'safety_officer') ON CONFLICT (id) DO NOTHING;
+
+  -- Financial Analyst
+  INSERT INTO auth.users (id, instance_id, aud, role, email, encrypted_password, email_confirmed_at, created_at, updated_at, raw_app_meta_data, raw_user_meta_data, is_super_admin, confirmation_token, recovery_token, email_change_token_new, email_change)
+  VALUES (fa_uid, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'finance@transitops.com', crypt('Finance@123', gen_salt('bf')), NOW(), NOW(), NOW(), '{"provider":"email","providers":["email"]}', '{"full_name":"Financial Analyst"}', FALSE, '', '', '', '');
+  INSERT INTO profiles (id, full_name, email, role) VALUES (fa_uid, 'Financial Analyst', 'finance@transitops.com', 'financial_analyst') ON CONFLICT (id) DO NOTHING;
+
+  RAISE NOTICE 'All demo role accounts created.';
+END $$;
 ```
-Email:    admin@transitops.com
-Password: Admin@123
-```
+
+After running the SQL, all five accounts are ready:
+
+| Role | Email | Password |
+|------|-------|----------|
+| **Admin** | `admin@transitops.com` | `Admin@123` |
+| **Fleet Manager** | `manager@transitops.com` | `Manager@123` |
+| **Driver** | `driver@transitops.com` | `Driver@123` |
+| **Safety Officer** | `safety@transitops.com` | `Safety@123` |
+| **Financial Analyst** | `finance@transitops.com` | `Finance@123` |
+
+> Alternatively, log in as Admin → **Settings → User Management** to promote any registered user's role via the UI.
 
 ---
 
@@ -283,7 +331,7 @@ All TypeScript checks pass. No build errors.
 
 ## 📄 License
 
-See [LICENSE.md](LICENSE.md) for details.
+MIT License - See [LICENSE](./LICENSE.md) file for details
 
 ---
 
