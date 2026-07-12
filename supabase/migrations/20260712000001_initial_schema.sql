@@ -399,6 +399,42 @@ SELECT
 FROM drivers d;
 
 -- ─── REALTIME ────────────────────────────────────────────────
--- Clean up existing realtime setups safely
-ALTER PUBLICATION supabase_realtime DROP TABLE IF EXISTS notifications, vehicles, trips, drivers;
-ALTER PUBLICATION supabase_realtime ADD TABLE notifications, vehicles, trips, drivers;
+-- Add tables to realtime publication safely if not already present
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_publication_rel pr 
+    JOIN pg_publication p ON p.oid = pr.prpubid 
+    JOIN pg_class c ON c.oid = pr.prrelid 
+    WHERE p.pubname = 'supabase_realtime' AND c.relname = 'notifications'
+  ) THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE notifications;
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_publication_rel pr 
+    JOIN pg_publication p ON p.oid = pr.prpubid 
+    JOIN pg_class c ON c.oid = pr.prrelid 
+    WHERE p.pubname = 'supabase_realtime' AND c.relname = 'vehicles'
+  ) THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE vehicles;
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_publication_rel pr 
+    JOIN pg_publication p ON p.oid = pr.prpubid 
+    JOIN pg_class c ON c.oid = pr.prrelid 
+    WHERE p.pubname = 'supabase_realtime' AND c.relname = 'trips'
+  ) THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE trips;
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_publication_rel pr 
+    JOIN pg_publication p ON p.oid = pr.prpubid 
+    JOIN pg_class c ON c.oid = pr.prrelid 
+    WHERE p.pubname = 'supabase_realtime' AND c.relname = 'drivers'
+  ) THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE drivers;
+  END IF;
+END$$;
