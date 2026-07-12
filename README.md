@@ -243,6 +243,44 @@ All TypeScript checks pass. No build errors.
 
 ---
 
+## 🚀 Deploy to Vercel
+
+### One-click deploy
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Kritansh-Tank/Odoo-Hackathon-2026)
+
+### Manual deployment steps
+
+1. **Push** your code to GitHub (already done).
+
+2. **Import** the repo on [vercel.com/new](https://vercel.com/new):
+   - Set **Root Directory** to `transitops`
+   - Framework will be auto-detected as **Next.js**
+
+3. **Add Environment Variables** in the Vercel dashboard (Settings → Environment Variables). Copy every key from [`.env.example`](.env.example):
+
+   | Variable | Where to find it |
+   |----------|-----------------|
+   | `NEXT_PUBLIC_SUPABASE_URL` | Supabase → Settings → API |
+   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase → Settings → API |
+   | `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Settings → API |
+   | `GROQ_API_KEY` | [console.groq.com](https://console.groq.com) |
+   | `RESEND_API_KEY` | [resend.com/api-keys](https://resend.com/api-keys) |
+   | `RESEND_FROM_EMAIL` | Your verified sender address |
+   | `NEXT_PUBLIC_APP_URL` | Your Vercel URL e.g. `https://transitops.vercel.app` |
+
+4. **Update Supabase Auth callback URL**:
+   - Supabase dashboard → Authentication → URL Configuration
+   - Add `https://your-deployment.vercel.app/auth/callback` to **Redirect URLs**
+
+5. **Deploy** — Vercel will run `npm run build` automatically.
+
+> **Region:** `vercel.json` targets `bom1` (Mumbai) for lowest latency in India. Change the `regions` field if deploying elsewhere.
+
+> **AI route timeouts:** Groq API calls are given 30 s; the PDF export route gets 60 s. These are set in `vercel.json`.
+
+---
+
 ## 📄 License
 
 See [LICENSE.md](LICENSE.md) for details.
