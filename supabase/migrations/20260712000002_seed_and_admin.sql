@@ -3,49 +3,73 @@
 -- Run this SEPARATELY if you already ran 001_initial_schema.sql
 -- ============================================================
 
--- ─── CREATE ADMIN USER ────────────────────────────────────────
--- Creates admin@transitops.com with password Admin@123
--- Email confirmation is bypassed (email_confirmed_at = NOW())
+-- ─── CREATE DEMO USERS ────────────────────────────────────────
+-- Creates admin, manager, driver, safety, and finance accounts
+-- Email confirmations are bypassed (email_confirmed_at = NOW())
 
 DO $$
 DECLARE
   admin_uid UUID := gen_random_uuid();
+  fm_uid    UUID := gen_random_uuid();
+  dr_uid    UUID := gen_random_uuid();
+  so_uid    UUID := gen_random_uuid();
+  fa_uid    UUID := gen_random_uuid();
   existing_uid UUID;
 BEGIN
-  -- Check if admin already exists
+  -- 1. Admin
   SELECT id INTO existing_uid FROM auth.users WHERE email = 'admin@transitops.com';
-
   IF existing_uid IS NULL THEN
-    INSERT INTO auth.users (
-      id, instance_id, aud, role,
-      email, encrypted_password,
-      email_confirmed_at,
-      created_at, updated_at,
-      raw_app_meta_data, raw_user_meta_data,
-      is_super_admin, confirmation_token, recovery_token,
-      email_change_token_new, email_change
-    ) VALUES (
-      admin_uid,
-      '00000000-0000-0000-0000-000000000000',
-      'authenticated', 'authenticated',
-      'admin@transitops.com',
-      crypt('Admin@123', gen_salt('bf')),
-      NOW(),
-      NOW(), NOW(),
-      '{"provider":"email","providers":["email"]}',
-      '{"full_name":"TransitOps Admin"}',
-      FALSE, '', '', '', ''
-    );
+    INSERT INTO auth.users (id, instance_id, aud, role, email, encrypted_password, email_confirmed_at, created_at, updated_at, raw_app_meta_data, raw_user_meta_data, is_super_admin, confirmation_token, recovery_token, email_change_token_new, email_change)
+    VALUES (admin_uid, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'admin@transitops.com', crypt('Admin@123', gen_salt('bf')), NOW(), NOW(), NOW(), '{"provider":"email","providers":["email"]}', '{"full_name":"TransitOps Admin"}', FALSE, '', '', '', '');
     existing_uid := admin_uid;
-    RAISE NOTICE 'Admin user created with id: %', existing_uid;
-  ELSE
-    RAISE NOTICE 'Admin user already exists with id: %', existing_uid;
   END IF;
-
-  -- Upsert profile with admin role
   INSERT INTO profiles (id, full_name, email, role)
   VALUES (existing_uid, 'TransitOps Admin', 'admin@transitops.com', 'admin')
   ON CONFLICT (id) DO UPDATE SET role = 'admin', full_name = 'TransitOps Admin';
+
+  -- 2. Fleet Manager
+  SELECT id INTO existing_uid FROM auth.users WHERE email = 'manager@transitops.com';
+  IF existing_uid IS NULL THEN
+    INSERT INTO auth.users (id, instance_id, aud, role, email, encrypted_password, email_confirmed_at, created_at, updated_at, raw_app_meta_data, raw_user_meta_data, is_super_admin, confirmation_token, recovery_token, email_change_token_new, email_change)
+    VALUES (fm_uid, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'manager@transitops.com', crypt('Manager@123', gen_salt('bf')), NOW(), NOW(), NOW(), '{"provider":"email","providers":["email"]}', '{"full_name":"Fleet Manager"}', FALSE, '', '', '', '');
+    existing_uid := fm_uid;
+  END IF;
+  INSERT INTO profiles (id, full_name, email, role)
+  VALUES (existing_uid, 'Fleet Manager', 'manager@transitops.com', 'fleet_manager')
+  ON CONFLICT (id) DO UPDATE SET role = 'fleet_manager', full_name = 'Fleet Manager';
+
+  -- 3. Driver
+  SELECT id INTO existing_uid FROM auth.users WHERE email = 'driver@transitops.com';
+  IF existing_uid IS NULL THEN
+    INSERT INTO auth.users (id, instance_id, aud, role, email, encrypted_password, email_confirmed_at, created_at, updated_at, raw_app_meta_data, raw_user_meta_data, is_super_admin, confirmation_token, recovery_token, email_change_token_new, email_change)
+    VALUES (dr_uid, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'driver@transitops.com', crypt('Driver@123', gen_salt('bf')), NOW(), NOW(), NOW(), '{"provider":"email","providers":["email"]}', '{"full_name":"Demo Driver"}', FALSE, '', '', '', '');
+    existing_uid := dr_uid;
+  END IF;
+  INSERT INTO profiles (id, full_name, email, role)
+  VALUES (existing_uid, 'Demo Driver', 'driver@transitops.com', 'driver')
+  ON CONFLICT (id) DO UPDATE SET role = 'driver', full_name = 'Demo Driver';
+
+  -- 4. Safety Officer
+  SELECT id INTO existing_uid FROM auth.users WHERE email = 'safety@transitops.com';
+  IF existing_uid IS NULL THEN
+    INSERT INTO auth.users (id, instance_id, aud, role, email, encrypted_password, email_confirmed_at, created_at, updated_at, raw_app_meta_data, raw_user_meta_data, is_super_admin, confirmation_token, recovery_token, email_change_token_new, email_change)
+    VALUES (so_uid, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'safety@transitops.com', crypt('Safety@123', gen_salt('bf')), NOW(), NOW(), NOW(), '{"provider":"email","providers":["email"]}', '{"full_name":"Safety Officer"}', FALSE, '', '', '', '');
+    existing_uid := so_uid;
+  END IF;
+  INSERT INTO profiles (id, full_name, email, role)
+  VALUES (existing_uid, 'Safety Officer', 'safety@transitops.com', 'safety_officer')
+  ON CONFLICT (id) DO UPDATE SET role = 'safety_officer', full_name = 'Safety Officer';
+
+  -- 5. Financial Analyst
+  SELECT id INTO existing_uid FROM auth.users WHERE email = 'finance@transitops.com';
+  IF existing_uid IS NULL THEN
+    INSERT INTO auth.users (id, instance_id, aud, role, email, encrypted_password, email_confirmed_at, created_at, updated_at, raw_app_meta_data, raw_user_meta_data, is_super_admin, confirmation_token, recovery_token, email_change_token_new, email_change)
+    VALUES (fa_uid, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'finance@transitops.com', crypt('Finance@123', gen_salt('bf')), NOW(), NOW(), NOW(), '{"provider":"email","providers":["email"]}', '{"full_name":"Financial Analyst"}', FALSE, '', '', '', '');
+    existing_uid := fa_uid;
+  END IF;
+  INSERT INTO profiles (id, full_name, email, role)
+  VALUES (existing_uid, 'Financial Analyst', 'finance@transitops.com', 'financial_analyst')
+  ON CONFLICT (id) DO UPDATE SET role = 'financial_analyst', full_name = 'Financial Analyst';
 
 END $$;
 
