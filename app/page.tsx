@@ -55,7 +55,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen text-[var(--color-text-primary)] flex flex-col font-sans selection:bg-[rgba(245,158,11,0.3)]" style={{ background: '#05050a' }}>
-      
+
       {/* ─── GLOW BACKGROUND ARTIFACTS ─────────────────────────────── */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full filter blur-[120px] opacity-10 animate-pulse" style={{ background: 'radial-gradient(circle, var(--color-amber-500) 0%, transparent 70%)' }} />
@@ -64,11 +64,10 @@ export default function LandingPage() {
 
       {/* ─── NAVIGATION BAR ────────────────────────────────────────── */}
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled
-            ? 'py-4 backdrop-blur-md border-b bg-[rgba(8,8,16,0.7)]'
-            : 'py-6 bg-transparent border-b border-transparent'
-        }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
+          ? 'py-4 backdrop-blur-md border-b bg-[rgba(8,8,16,0.7)]'
+          : 'py-6 bg-transparent border-b border-transparent'
+          }`}
         style={{ borderColor: scrolled ? 'var(--color-border-subtle)' : 'transparent' }}
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
@@ -125,7 +124,7 @@ export default function LandingPage() {
               color: 'var(--color-amber-400)'
             }}
           >
-            🚀 Odoo Hackathon 2026 Solo Project
+            Odoo Hackathon 2026
           </span>
 
           <h1
@@ -184,7 +183,7 @@ export default function LandingPage() {
               <div className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
               <div className="text-[10px] mx-auto" style={{ color: 'var(--color-text-muted)' }}>transitops-dusky.vercel.app/dashboard</div>
             </div>
-            
+
             {/* Visual Bento Grid Mock layout placeholder inside the browser wrapper */}
             <div className="bg-[#08080f] p-4 md:p-8 grid grid-cols-1 md:grid-cols-3 gap-4 text-left pointer-events-none select-none">
               <div className="card space-y-2 border" style={{ borderColor: 'rgba(255,255,255,0.03)', background: '#0e0e1a' }}>
@@ -195,12 +194,12 @@ export default function LandingPage() {
               <div className="card space-y-2 border" style={{ borderColor: 'rgba(255,255,255,0.03)', background: '#0e0e1a' }}>
                 <div className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Safety & Risk Compliance</div>
                 <div className="text-2xl font-black text-blue-400">92% Avg Safety Score</div>
-                <div className="text-[10px]" style={{ color: 'var(--color-text-muted)' }}>1 Expiring license alert generated</div>
+                <div className="text-[10px]" style={{ color: 'var(--color-text-muted)' }}>5 Expiring license alert generated</div>
               </div>
               <div className="card space-y-2 border" style={{ borderColor: 'rgba(255,255,255,0.03)', background: '#0e0e1a' }}>
                 <div className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Operating Revenue</div>
                 <div className="text-2xl font-black text-green-400">₹8,92,400</div>
-                <div className="text-[10px]" style={{ color: 'var(--color-text-muted)' }}>Standard rate: ₹40 / km applied</div>
+                <div className="text-[10px]" style={{ color: 'var(--color-text-muted)' }}>Standard rate: ₹15 / km applied</div>
               </div>
             </div>
           </div>
@@ -220,7 +219,7 @@ export default function LandingPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            
+
             {/* AI Advisor Card */}
             <div className="card border p-6 flex flex-col justify-between hover:translate-y-[-4px] transition-transform duration-300" style={{ background: '#0e0e1a', borderColor: 'rgba(255,255,255,0.04)' }}>
               <div className="space-y-4">
@@ -302,7 +301,7 @@ export default function LandingPage() {
       {/* ─── ROLE PRIVILEGES ACCORDION SECTION ───────────────────── */}
       <section id="rbac" className="py-24 max-w-7xl mx-auto px-6 z-10 relative">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-center">
-          
+
           <div className="lg:col-span-2 space-y-6">
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
               Enterprise Role-Based Access Control
@@ -401,7 +400,7 @@ export default function LandingPage() {
           </div>
 
           <div className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>
-            © {new Date().getFullYear()} TransitOps · Solo Hackathon Build · Designed with Premium Aesthetics.
+            © {new Date().getFullYear()} TransitOps · By <a href="https://github.com/Kritansh-Tank" target="_blank" rel="noopener noreferrer" className="hover:text-amber-400 transition-colors font-bold underline" >Kritansh Tank</a>
           </div>
         </div>
       </footer>

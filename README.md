@@ -22,6 +22,14 @@ TransitOps digitizes and streamlines transport fleet operations — from vehicle
 
 ---
 
+## User Interface
+
+### Home
+ 
+![Home](assets/home.png)
+
+---
+
 ## ✨ Features
 
 ### Core Modules
