@@ -2,7 +2,11 @@
 
 import { useEffect, useRef } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Bell, Sun, Moon, LogOut, Link } from 'lucide-react';
+import {
+  Bell, Sun, Moon, LogOut, ChevronDown, LayoutDashboard,
+  Car, Users, Route, Wrench, Fuel, BarChart3, Settings
+} from 'lucide-react';
+import Link from 'next/link';
 import { useAppStore } from '@/store/useAppStore';
 import { createClient } from '@/lib/supabase/client';
 import { formatRelative } from '@/lib/utils';
@@ -27,6 +31,8 @@ export default function Topbar() {
   const { theme, toggleTheme, unreadCount, setUnreadCount, profile } = useAppStore();
   const supabase = createClient();
   const [signingOut, setSigningOut] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   const handleSignOut = async () => {
     setSigningOut(true);
@@ -77,11 +83,14 @@ export default function Topbar() {
     return () => { supabase.removeChannel(channel); };
   }, [profile]);
 
-  // Close dropdown on outside click
+  // Close dropdowns on outside click
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setShowNotifDropdown(false);
+      }
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(e.target as Node)) {
+        setShowMobileMenu(false);
       }
     };
     document.addEventListener('mousedown', handleClick);
@@ -107,14 +116,80 @@ export default function Topbar() {
         height: 64,
       }}
     >
-      {/* Page title */}
-      <div>
-        <h1 className="font-bold text-base" style={{ color: 'var(--color-text-primary)' }}>
-          {title}
-        </h1>
-        <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-          {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-        </p>
+      {/* Page title / Mobile Menu */}
+      <div className="flex items-center gap-2">
+        {/* Desktop Title */}
+        <div className="hidden md:block">
+          <h1 className="font-bold text-base" style={{ color: 'var(--color-text-primary)' }}>
+            {title}
+          </h1>
+          <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+            {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+          </p>
+        </div>
+
+        {/* Mobile Dropdown Trigger */}
+        <div className="relative md:hidden" ref={mobileMenuRef}>
+          <button
+            onClick={() => setShowMobileMenu(!showMobileMenu)}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg font-bold text-base cursor-pointer hover:bg-[var(--color-bg-hover)] transition-colors"
+            style={{ color: 'var(--color-text-primary)' }}
+          >
+            <span>TransitOps</span>
+            <ChevronDown
+              size={16}
+              className={`transition-transform duration-200 ${showMobileMenu ? 'rotate-180' : ''}`}
+            />
+          </button>
+
+          {/* Mobile Menu Dropdown */}
+          {showMobileMenu && (
+            <div
+              className="absolute left-0 top-full mt-2 w-56 rounded-xl shadow-2xl z-50 animate-scale-in py-1"
+              style={{
+                background: 'var(--color-bg-elevated)',
+                border: '1px solid var(--color-border-strong)',
+              }}
+            >
+              {[
+                { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+                { href: '/vehicles', icon: Car, label: 'Vehicles' },
+                { href: '/drivers', icon: Users, label: 'Drivers' },
+                { href: '/trips', icon: Route, label: 'Trips' },
+                { href: '/maintenance', icon: Wrench, label: 'Maintenance' },
+                { href: '/fuel-expenses', icon: Fuel, label: 'Fuel & Expenses' },
+                { href: '/reports', icon: BarChart3, label: 'Reports' },
+                { href: '/notifications', icon: Bell, label: 'Notifications' },
+                { href: '/settings', icon: Settings, label: 'Settings' },
+              ].map(({ href, icon: Icon, label }) => {
+                const active = pathname === href || pathname.startsWith(href + '/');
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={() => setShowMobileMenu(false)}
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm transition-colors hover:bg-[var(--color-bg-hover)]"
+                    style={{
+                      color: active ? 'var(--color-amber-400)' : 'var(--color-text-secondary)',
+                      fontWeight: active ? 600 : 400,
+                    }}
+                  >
+                    <Icon size={16} className={active ? 'text-[var(--color-amber-400)]' : 'text-[var(--color-text-muted)]'} />
+                    <span>{label}</span>
+                    {href === '/notifications' && unreadCount > 0 && (
+                      <span
+                        className="ml-auto flex items-center justify-center w-4 h-4 text-[9px] font-bold rounded-full text-black"
+                        style={{ background: 'var(--color-amber-500)' }}
+                      >
+                        {unreadCount}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Right actions */}

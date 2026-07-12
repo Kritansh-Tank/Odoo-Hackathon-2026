@@ -34,7 +34,7 @@ export default function Sidebar() {
     <motion.aside
       animate={{ width: sidebarCollapsed ? 64 : 240 }}
       transition={{ duration: 0.25, ease: 'easeInOut' }}
-      className="fixed left-0 top-0 h-screen flex flex-col z-40 overflow-hidden"
+      className="hidden md:flex fixed left-0 top-0 h-screen flex-col z-40 overflow-hidden"
       style={{
         background: 'var(--color-bg-sidebar)',
         borderRight: '1px solid var(--color-border)',

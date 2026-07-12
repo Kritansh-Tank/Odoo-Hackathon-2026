@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -40,12 +40,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <div className="flex h-screen overflow-hidden" style={{ background: 'var(--color-bg-base)' }}>
       <Sidebar />
       <div
-        className="flex flex-col flex-1 overflow-hidden transition-all duration-300"
-        style={{ marginLeft: sidebarCollapsed ? '64px' : '240px' }}
+        className={`flex flex-col flex-1 overflow-hidden transition-all duration-300 ml-0 ${
+          sidebarCollapsed ? 'md:ml-[64px]' : 'md:ml-[240px]'
+        }`}
       >
         <Topbar />
         <main
-          className="flex-1 overflow-y-auto p-6"
+          className="flex-1 overflow-y-auto p-4 md:p-6"
           style={{ background: 'var(--color-bg-base)' }}
         >
           {children}
