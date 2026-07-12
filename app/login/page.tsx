@@ -320,7 +320,7 @@ export default function LoginPage() {
 
             {mode === 'signup' && (
               <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-                ðŸ”’ All new accounts are created as <strong style={{ color: 'var(--color-text-secondary)' }}>Employee (Driver)</strong> role. Admins promote roles from the Settings screen.
+                🔒 All new accounts are created as <strong style={{ color: 'var(--color-text-secondary)' }}>Employee (Driver)</strong> role. Admins promote roles from the Settings screen.
               </p>
             )}
 
@@ -359,17 +359,46 @@ export default function LoginPage() {
             )}
           </div>
 
-          {/* Demo credentials hint */}
-          <div
-            className="mt-6 p-3 rounded-lg text-xs text-center"
-            style={{
-              background: 'rgba(245,158,11,0.06)',
-              border: '1px solid rgba(245,158,11,0.15)',
-              color: 'var(--color-text-muted)',
-            }}
-          >
-            Demo: <span style={{ color: 'var(--color-amber-400)' }}>admin@transitops.com</span> / <span style={{ color: 'var(--color-amber-400)' }}>Admin@123</span>
-          </div>
+          {/* Demo credentials helper with click-to-fill */}
+          {mode === 'login' && (
+            <div
+              className="mt-6 p-4 rounded-xl text-xs space-y-3"
+              style={{
+                background: 'rgba(245,158,11,0.04)',
+                border: '1px solid rgba(245,158,11,0.12)',
+                color: 'var(--color-text-muted)',
+              }}
+            >
+              <div className="font-semibold text-center" style={{ color: 'var(--color-text-secondary)' }}>
+                ⚡ Quick Demo Roles (Click to fill)
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 justify-center">
+                {[
+                  { label: 'Admin', email: 'admin@transitops.com', pass: 'Admin@123' },
+                  { label: 'Manager', email: 'manager@transitops.com', pass: 'Manager@123' },
+                  { label: 'Safety', email: 'safety@transitops.com', pass: 'Safety@123' },
+                  { label: 'Finance', email: 'finance@transitops.com', pass: 'Finance@123' },
+                  { label: 'Driver', email: 'driver@transitops.com', pass: 'Driver@123' },
+                ].map((role) => (
+                  <button
+                    key={role.label}
+                    type="button"
+                    onClick={() => {
+                      setForm({ full_name: '', email: role.email, password: role.pass });
+                      setError('');
+                    }}
+                    className="px-2 py-1.5 rounded-lg text-center hover:bg-[var(--color-bg-hover)] transition-colors border cursor-pointer font-medium"
+                    style={{
+                      borderColor: 'rgba(245,158,11,0.15)',
+                      color: 'var(--color-text-primary)'
+                    }}
+                  >
+                    {role.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </motion.div>
       </div>
     </div>
