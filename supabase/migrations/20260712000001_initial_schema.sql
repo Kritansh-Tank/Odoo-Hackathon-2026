@@ -1,19 +1,36 @@
 -- ============================================================
--- TransitOps â€” Initial Schema Migration
--- Run this in Supabase SQL Editor
+-- TransitOps — Initial Schema Migration
+-- Safe to re-run on pre-existing schemas (Idempotent)
 -- ============================================================
 
--- â”€â”€â”€ ENUMS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-CREATE TYPE user_role AS ENUM ('admin', 'fleet_manager', 'driver', 'safety_officer', 'financial_analyst');
-CREATE TYPE vehicle_status AS ENUM ('Available', 'On Trip', 'In Shop', 'Retired');
-CREATE TYPE vehicle_type AS ENUM ('Truck', 'Van', 'Car', 'Bus', 'Motorcycle', 'Other');
-CREATE TYPE driver_status AS ENUM ('Available', 'On Trip', 'Off Duty', 'Suspended');
-CREATE TYPE trip_status AS ENUM ('Draft', 'Dispatched', 'Completed', 'Cancelled');
-CREATE TYPE maintenance_status AS ENUM ('Open', 'In Progress', 'Closed');
-CREATE TYPE expense_type AS ENUM ('Toll', 'Parking', 'Loading', 'Other');
+-- ─── ENUMS ───────────────────────────────────────────────────
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'user_role') THEN
+    CREATE TYPE user_role AS ENUM ('admin', 'fleet_manager', 'driver', 'safety_officer', 'financial_analyst');
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'vehicle_status') THEN
+    CREATE TYPE vehicle_status AS ENUM ('Available', 'On Trip', 'In Shop', 'Retired');
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'vehicle_type') THEN
+    CREATE TYPE vehicle_type AS ENUM ('Truck', 'Van', 'Car', 'Bus', 'Motorcycle', 'Other');
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'driver_status') THEN
+    CREATE TYPE driver_status AS ENUM ('Available', 'On Trip', 'Off Duty', 'Suspended');
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'trip_status') THEN
+    CREATE TYPE trip_status AS ENUM ('Draft', 'Dispatched', 'Completed', 'Cancelled');
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'maintenance_status') THEN
+    CREATE TYPE maintenance_status AS ENUM ('Open', 'In Progress', 'Closed');
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'expense_type') THEN
+    CREATE TYPE expense_type AS ENUM ('Toll', 'Parking', 'Loading', 'Other');
+  END IF;
+END$$;
 
--- â”€â”€â”€ PROFILES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-CREATE TABLE profiles (
+-- ─── PROFILES ────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS profiles (
   id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
   full_name TEXT NOT NULL,
   email TEXT NOT NULL UNIQUE,
@@ -24,8 +41,14 @@ CREATE TABLE profiles (
 );
 
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "profiles_select" ON profiles;
 CREATE POLICY "profiles_select" ON profiles FOR SELECT TO authenticated USING (true);
+
+DROP POLICY IF EXISTS "profiles_update_own" ON profiles;
 CREATE POLICY "profiles_update_own" ON profiles FOR UPDATE TO authenticated USING (auth.uid() = id);
+
+DROP POLICY IF EXISTS "profiles_insert_own" ON profiles;
 CREATE POLICY "profiles_insert_own" ON profiles FOR INSERT TO authenticated WITH CHECK (auth.uid() = id);
 
 -- Auto-create profile on signup
@@ -38,17 +61,19 @@ BEGIN
     COALESCE(NEW.raw_user_meta_data->>'full_name', split_part(NEW.email, '@', 1)),
     NEW.email,
     'driver'
-  );
+  )
+  ON CONFLICT (id) DO NOTHING;
   RETURN NEW;
 END;
 $$;
 
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION handle_new_user();
 
--- â”€â”€â”€ VEHICLES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-CREATE TABLE vehicles (
+-- ─── VEHICLES ────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS vehicles (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   registration_number TEXT UNIQUE NOT NULL,
   name TEXT NOT NULL,
@@ -67,13 +92,21 @@ CREATE TABLE vehicles (
 );
 
 ALTER TABLE vehicles ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "vehicles_select" ON vehicles;
 CREATE POLICY "vehicles_select" ON vehicles FOR SELECT TO authenticated USING (true);
+
+DROP POLICY IF EXISTS "vehicles_insert" ON vehicles;
 CREATE POLICY "vehicles_insert" ON vehicles FOR INSERT TO authenticated WITH CHECK (true);
+
+DROP POLICY IF EXISTS "vehicles_update" ON vehicles;
 CREATE POLICY "vehicles_update" ON vehicles FOR UPDATE TO authenticated USING (true);
+
+DROP POLICY IF EXISTS "vehicles_delete" ON vehicles;
 CREATE POLICY "vehicles_delete" ON vehicles FOR DELETE TO authenticated USING (true);
 
--- â”€â”€â”€ VEHICLE DOCUMENTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-CREATE TABLE vehicle_documents (
+-- ─── VEHICLE DOCUMENTS ───────────────────────────────────────
+CREATE TABLE IF NOT EXISTS vehicle_documents (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   vehicle_id UUID REFERENCES vehicles(id) ON DELETE CASCADE NOT NULL,
   name TEXT NOT NULL,
@@ -85,12 +118,18 @@ CREATE TABLE vehicle_documents (
 );
 
 ALTER TABLE vehicle_documents ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "vehicle_docs_select" ON vehicle_documents;
 CREATE POLICY "vehicle_docs_select" ON vehicle_documents FOR SELECT TO authenticated USING (true);
+
+DROP POLICY IF EXISTS "vehicle_docs_insert" ON vehicle_documents;
 CREATE POLICY "vehicle_docs_insert" ON vehicle_documents FOR INSERT TO authenticated WITH CHECK (true);
+
+DROP POLICY IF EXISTS "vehicle_docs_delete" ON vehicle_documents;
 CREATE POLICY "vehicle_docs_delete" ON vehicle_documents FOR DELETE TO authenticated USING (true);
 
--- â”€â”€â”€ DRIVERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-CREATE TABLE drivers (
+-- ─── DRIVERS ─────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS drivers (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   profile_id UUID REFERENCES profiles(id),
   name TEXT NOT NULL,
@@ -108,13 +147,21 @@ CREATE TABLE drivers (
 );
 
 ALTER TABLE drivers ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "drivers_select" ON drivers;
 CREATE POLICY "drivers_select" ON drivers FOR SELECT TO authenticated USING (true);
+
+DROP POLICY IF EXISTS "drivers_insert" ON drivers;
 CREATE POLICY "drivers_insert" ON drivers FOR INSERT TO authenticated WITH CHECK (true);
+
+DROP POLICY IF EXISTS "drivers_update" ON drivers;
 CREATE POLICY "drivers_update" ON drivers FOR UPDATE TO authenticated USING (true);
+
+DROP POLICY IF EXISTS "drivers_delete" ON drivers;
 CREATE POLICY "drivers_delete" ON drivers FOR DELETE TO authenticated USING (true);
 
--- â”€â”€â”€ TRIPS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-CREATE TABLE trips (
+-- ─── TRIPS ───────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS trips (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   trip_number TEXT UNIQUE NOT NULL,
   source TEXT NOT NULL,
@@ -140,13 +187,21 @@ CREATE TABLE trips (
 );
 
 ALTER TABLE trips ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "trips_select" ON trips;
 CREATE POLICY "trips_select" ON trips FOR SELECT TO authenticated USING (true);
+
+DROP POLICY IF EXISTS "trips_insert" ON trips;
 CREATE POLICY "trips_insert" ON trips FOR INSERT TO authenticated WITH CHECK (true);
+
+DROP POLICY IF EXISTS "trips_update" ON trips;
 CREATE POLICY "trips_update" ON trips FOR UPDATE TO authenticated USING (true);
+
+DROP POLICY IF EXISTS "trips_delete" ON trips;
 CREATE POLICY "trips_delete" ON trips FOR DELETE TO authenticated USING (true);
 
 -- Auto-generate trip number
-CREATE SEQUENCE trip_number_seq START 1;
+CREATE SEQUENCE IF NOT EXISTS trip_number_seq START 1;
 CREATE OR REPLACE FUNCTION generate_trip_number()
 RETURNS TRIGGER LANGUAGE plpgsql AS $$
 BEGIN
@@ -155,14 +210,15 @@ BEGIN
 END;
 $$;
 
+DROP TRIGGER IF EXISTS set_trip_number ON trips;
 CREATE TRIGGER set_trip_number
   BEFORE INSERT ON trips
   FOR EACH ROW
   WHEN (NEW.trip_number IS NULL OR NEW.trip_number = '')
   EXECUTE FUNCTION generate_trip_number();
 
--- â”€â”€â”€ MAINTENANCE LOGS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-CREATE TABLE maintenance_logs (
+-- ─── MAINTENANCE LOGS ────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS maintenance_logs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   vehicle_id UUID REFERENCES vehicles(id) NOT NULL,
   maintenance_type TEXT NOT NULL,
@@ -180,13 +236,21 @@ CREATE TABLE maintenance_logs (
 );
 
 ALTER TABLE maintenance_logs ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "maintenance_select" ON maintenance_logs;
 CREATE POLICY "maintenance_select" ON maintenance_logs FOR SELECT TO authenticated USING (true);
+
+DROP POLICY IF EXISTS "maintenance_insert" ON maintenance_logs;
 CREATE POLICY "maintenance_insert" ON maintenance_logs FOR INSERT TO authenticated WITH CHECK (true);
+
+DROP POLICY IF EXISTS "maintenance_update" ON maintenance_logs;
 CREATE POLICY "maintenance_update" ON maintenance_logs FOR UPDATE TO authenticated USING (true);
+
+DROP POLICY IF EXISTS "maintenance_delete" ON maintenance_logs;
 CREATE POLICY "maintenance_delete" ON maintenance_logs FOR DELETE TO authenticated USING (true);
 
--- â”€â”€â”€ FUEL LOGS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-CREATE TABLE fuel_logs (
+-- ─── FUEL LOGS ───────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS fuel_logs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   vehicle_id UUID REFERENCES vehicles(id) NOT NULL,
   trip_id UUID REFERENCES trips(id),
@@ -201,13 +265,21 @@ CREATE TABLE fuel_logs (
 );
 
 ALTER TABLE fuel_logs ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "fuel_logs_select" ON fuel_logs;
 CREATE POLICY "fuel_logs_select" ON fuel_logs FOR SELECT TO authenticated USING (true);
+
+DROP POLICY IF EXISTS "fuel_logs_insert" ON fuel_logs;
 CREATE POLICY "fuel_logs_insert" ON fuel_logs FOR INSERT TO authenticated WITH CHECK (true);
+
+DROP POLICY IF EXISTS "fuel_logs_update" ON fuel_logs;
 CREATE POLICY "fuel_logs_update" ON fuel_logs FOR UPDATE TO authenticated USING (true);
+
+DROP POLICY IF EXISTS "fuel_logs_delete" ON fuel_logs;
 CREATE POLICY "fuel_logs_delete" ON fuel_logs FOR DELETE TO authenticated USING (true);
 
--- â”€â”€â”€ EXPENSES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-CREATE TABLE expenses (
+-- ─── EXPENSES ────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS expenses (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   vehicle_id UUID REFERENCES vehicles(id),
   trip_id UUID REFERENCES trips(id),
@@ -221,13 +293,21 @@ CREATE TABLE expenses (
 );
 
 ALTER TABLE expenses ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "expenses_select" ON expenses;
 CREATE POLICY "expenses_select" ON expenses FOR SELECT TO authenticated USING (true);
+
+DROP POLICY IF EXISTS "expenses_insert" ON expenses;
 CREATE POLICY "expenses_insert" ON expenses FOR INSERT TO authenticated WITH CHECK (true);
+
+DROP POLICY IF EXISTS "expenses_update" ON expenses;
 CREATE POLICY "expenses_update" ON expenses FOR UPDATE TO authenticated USING (true);
+
+DROP POLICY IF EXISTS "expenses_delete" ON expenses;
 CREATE POLICY "expenses_delete" ON expenses FOR DELETE TO authenticated USING (true);
 
--- â”€â”€â”€ NOTIFICATIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-CREATE TABLE notifications (
+-- ─── NOTIFICATIONS ───────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS notifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   recipient_id UUID REFERENCES profiles(id) NOT NULL,
   type TEXT NOT NULL,
@@ -239,13 +319,21 @@ CREATE TABLE notifications (
 );
 
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "notifications_select" ON notifications;
 CREATE POLICY "notifications_select" ON notifications FOR SELECT TO authenticated USING (auth.uid() = recipient_id);
+
+DROP POLICY IF EXISTS "notifications_insert" ON notifications;
 CREATE POLICY "notifications_insert" ON notifications FOR INSERT TO authenticated WITH CHECK (true);
+
+DROP POLICY IF EXISTS "notifications_update" ON notifications;
 CREATE POLICY "notifications_update" ON notifications FOR UPDATE TO authenticated USING (auth.uid() = recipient_id);
+
+DROP POLICY IF EXISTS "notifications_delete" ON notifications;
 CREATE POLICY "notifications_delete" ON notifications FOR DELETE TO authenticated USING (auth.uid() = recipient_id);
 
--- â”€â”€â”€ SYSTEM SETTINGS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-CREATE TABLE system_settings (
+-- ─── SYSTEM SETTINGS ─────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS system_settings (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   key TEXT UNIQUE NOT NULL,
   value TEXT NOT NULL,
@@ -254,19 +342,24 @@ CREATE TABLE system_settings (
 );
 
 ALTER TABLE system_settings ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "settings_select" ON system_settings;
 CREATE POLICY "settings_select" ON system_settings FOR SELECT TO authenticated USING (true);
+
+DROP POLICY IF EXISTS "settings_update" ON system_settings;
 CREATE POLICY "settings_update" ON system_settings FOR UPDATE TO authenticated USING (true);
 
 -- Default settings
 INSERT INTO system_settings (key, value, description) VALUES
-  ('rate_per_km', '15', 'Revenue rate per kilometer (â‚¹)'),
+  ('rate_per_km', '15', 'Revenue rate per kilometer (₹)'),
   ('license_expiry_warning_days', '30', 'Days before license expiry to show warning'),
   ('email_reminders_enabled', 'true', 'Send email reminders for expiring licenses'),
   ('email_reminder_days', '30', 'Days before expiry to send email reminder'),
   ('app_name', 'TransitOps', 'Application name'),
-  ('default_regions', 'North,South,East,West,Central', 'Comma-separated list of regions');
+  ('default_regions', 'North,South,East,West,Central', 'Comma-separated list of regions')
+ON CONFLICT (key) DO NOTHING;
 
--- â”€â”€â”€ USEFUL VIEWS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+-- ─── USEFUL VIEWS ────────────────────────────────────────────
 
 -- Vehicle cost summary view
 CREATE OR REPLACE VIEW vehicle_cost_summary AS
@@ -305,8 +398,7 @@ SELECT
   END AS license_status
 FROM drivers d;
 
--- â”€â”€â”€ REALTIME â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-ALTER PUBLICATION supabase_realtime ADD TABLE notifications;
-ALTER PUBLICATION supabase_realtime ADD TABLE vehicles;
-ALTER PUBLICATION supabase_realtime ADD TABLE trips;
-ALTER PUBLICATION supabase_realtime ADD TABLE drivers;
+-- ─── REALTIME ────────────────────────────────────────────────
+-- Clean up existing realtime setups safely
+ALTER PUBLICATION supabase_realtime DROP TABLE IF EXISTS notifications, vehicles, trips, drivers;
+ALTER PUBLICATION supabase_realtime ADD TABLE notifications, vehicles, trips, drivers;
