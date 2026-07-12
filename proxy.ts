@@ -29,7 +29,7 @@ export async function proxy(request: NextRequest) {
 
   // Public routes — no auth required
   const publicRoutes = ['/login', '/auth/callback'];
-  const isPublicRoute = publicRoutes.some((route) => pathname.startsWith(route));
+  const isPublicRoute = pathname === '/' || publicRoutes.some((route) => pathname.startsWith(route));
 
   if (!user && !isPublicRoute) {
     const loginUrl = request.nextUrl.clone();
