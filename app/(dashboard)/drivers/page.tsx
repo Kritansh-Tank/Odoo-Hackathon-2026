@@ -10,9 +10,11 @@ import {
 } from '@/lib/utils';
 import { getLicenseDaysUntilExpiry } from '@/lib/business-rules';
 import DriverFormModal from '@/components/drivers/DriverFormModal';
+import { useAppStore } from '@/store/useAppStore';
 import { toast } from 'sonner';
 
 export default function DriversPage() {
+  const { profile } = useAppStore();
   const supabase = createClient();
   const [drivers, setDrivers] = useState<DriverWithExpiry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -83,9 +85,11 @@ export default function DriversPage() {
           <h1 className="page-title">Driver & Safety Profiles</h1>
           <p className="page-subtitle">{drivers.length} driver{drivers.length !== 1 ? 's' : ''} registered</p>
         </div>
-        <button onClick={() => { setEditDriver(undefined); setShowModal(true); }} className="btn btn-primary">
-          <Plus size={16} /> Add Driver
-        </button>
+        {(profile?.role === 'admin' || profile?.role === 'fleet_manager') && (
+          <button onClick={() => { setEditDriver(undefined); setShowModal(true); }} className="btn btn-primary">
+            <Plus size={16} /> Add Driver
+          </button>
+        )}
       </div>
 
       {/* Filters */}
@@ -219,9 +223,11 @@ export default function DriversPage() {
                         <button onClick={() => { setEditDriver(d); setShowModal(true); }} className="btn btn-ghost btn-sm w-7 h-7 p-0" title="Edit">
                           <Edit size={13} />
                         </button>
-                        <button onClick={() => deleteDriver(d.id, d.name)} className="btn btn-ghost btn-sm w-7 h-7 p-0" title="Delete" style={{ color: 'var(--color-danger)' }}>
-                          <Trash2 size={13} />
-                        </button>
+                        {(profile?.role === 'admin' || profile?.role === 'fleet_manager') && (
+                          <button onClick={() => deleteDriver(d.id, d.name)} className="btn btn-ghost btn-sm w-7 h-7 p-0" title="Delete" style={{ color: 'var(--color-danger)' }}>
+                            <Trash2 size={13} />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </motion.tr>

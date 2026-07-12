@@ -11,6 +11,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import ModalPortal from '@/components/ui/ModalPortal';
+import { useAppStore } from '@/store/useAppStore';
 
 const fuelSchema = z.object({
   vehicle_id: z.string().min(1, 'Required'),
@@ -35,6 +36,7 @@ type FuelData = z.infer<typeof fuelSchema>;
 type ExpenseData = z.infer<typeof expenseSchema>;
 
 export default function FuelExpensesPage() {
+  const { profile } = useAppStore();
   const supabase = createClient();
   const [tab, setTab] = useState<'fuel' | 'expenses'>('fuel');
   const [fuelLogs, setFuelLogs] = useState<(FuelLog & { vehicle?: Vehicle })[]>([]);
@@ -51,9 +53,17 @@ export default function FuelExpensesPage() {
 
   const loadAll = useCallback(async () => {
     setLoading(true);
+    let fuelQuery = supabase.from('fuel_logs').select('*, vehicle:vehicles(name, registration_number)').order('date', { ascending: false });
+    let expQuery = supabase.from('expenses').select('*, vehicle:vehicles(name, registration_number)').order('date', { ascending: false });
+
+    if (profile?.role === 'driver') {
+      fuelQuery = fuelQuery.eq('created_by', profile.id);
+      expQuery = expQuery.eq('created_by', profile.id);
+    }
+
     const [fuelRes, expenseRes, vehicleRes, tripRes] = await Promise.all([
-      supabase.from('fuel_logs').select('*, vehicle:vehicles(name, registration_number)').order('date', { ascending: false }),
-      supabase.from('expenses').select('*, vehicle:vehicles(name, registration_number)').order('date', { ascending: false }),
+      fuelQuery,
+      expQuery,
       supabase.from('vehicles').select('id, name, registration_number').order('name'),
       supabase.from('trips').select('id, trip_number, source, destination').eq('status', 'Dispatched').order('created_at', { ascending: false }),
     ]);

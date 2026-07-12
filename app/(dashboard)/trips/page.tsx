@@ -10,11 +10,13 @@ import { getTripStatusClass, formatDate, formatRelative, formatCurrency, formatK
 import { debounce } from '@/lib/utils';
 import TripFormWizard from '@/components/trips/TripFormWizard';
 import CompleteTripModal from '@/components/trips/CompleteTripModal';
+import { useAppStore } from '@/store/useAppStore';
 import { toast } from 'sonner';
 
 const STATUS_TABS: (TripStatus | 'all')[] = ['all', 'Draft', 'Dispatched', 'Completed', 'Cancelled'];
 
 export default function TripsPage() {
+  const { profile } = useAppStore();
   const supabase = createClient();
   const [trips, setTrips] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,6 +32,22 @@ export default function TripsPage() {
       .select('*, vehicle:vehicles(name, registration_number), driver:drivers(name, contact_number)')
       .order('created_at', { ascending: false });
 
+    if (profile?.role === 'driver') {
+      const { data: driverRec } = await supabase
+        .from('drivers')
+        .select('id')
+        .eq('profile_id', profile.id)
+        .maybeSingle();
+
+      if (driverRec) {
+        query = query.eq('driver_id', driverRec.id);
+      } else {
+        setTrips([]);
+        setLoading(false);
+        return;
+      }
+    }
+
     if (activeTab !== 'all') query = query.eq('status', activeTab);
     if (search) {
       query = query.or(`source.ilike.%${search}%,destination.ilike.%${search}%,trip_number.ilike.%${search}%`);
@@ -38,7 +56,7 @@ export default function TripsPage() {
     const { data } = await query;
     setTrips((data || []) as Trip[]);
     setLoading(false);
-  }, [activeTab, search]);
+  }, [activeTab, search, profile]);
 
   useEffect(() => { loadTrips(); }, [loadTrips]);
 
@@ -70,9 +88,11 @@ export default function TripsPage() {
           <h1 className="page-title">Trip Management</h1>
           <p className="page-subtitle">{trips.length} trip{trips.length !== 1 ? 's' : ''} shown</p>
         </div>
-        <button onClick={() => setShowCreateModal(true)} className="btn btn-primary">
-          <Plus size={16} /> Create Trip
-        </button>
+        {(profile?.role === 'admin' || profile?.role === 'fleet_manager') && (
+          <button onClick={() => setShowCreateModal(true)} className="btn btn-primary">
+            <Plus size={16} /> Create Trip
+          </button>
+        )}
       </div>
 
       {/* Status tabs */}
@@ -193,7 +213,7 @@ export default function TripsPage() {
                   <td>
                     <div className="flex items-center gap-1">
                       <Link href={`/trips/${trip.id}`} className="btn btn-ghost btn-sm w-7 h-7 p-0" title="View"><Eye size={13} /></Link>
-                      {trip.status === 'Dispatched' && (
+                      {(profile?.role === 'admin' || profile?.role === 'fleet_manager') && trip.status === 'Dispatched' && (
                         <>
                           <button onClick={() => setCompleteTrip(trip)} className="btn btn-ghost btn-sm w-7 h-7 p-0" title="Complete" style={{ color: '#22c55e' }}>
                             <CheckCircle size={13} />
@@ -203,7 +223,7 @@ export default function TripsPage() {
                           </button>
                         </>
                       )}
-                      {trip.status === 'Draft' && (
+                      {(profile?.role === 'admin' || profile?.role === 'fleet_manager') && trip.status === 'Draft' && (
                         <button onClick={() => cancelTrip(trip)} className="btn btn-ghost btn-sm w-7 h-7 p-0" title="Cancel" style={{ color: 'var(--color-danger)' }}>
                           <X size={13} />
                         </button>

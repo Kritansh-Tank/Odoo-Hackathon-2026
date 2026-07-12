@@ -85,6 +85,7 @@ export default function SettingsPage() {
                 value={localRate}
                 onChange={e => setLocalRate(Number(e.target.value))}
                 min={0}
+                disabled={!isAdmin}
               />
               <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
                 Used for auto-calculating trip revenue
@@ -102,6 +103,7 @@ export default function SettingsPage() {
                 onChange={e => setLocalWarningDays(Number(e.target.value))}
                 min={1}
                 max={90}
+                disabled={!isAdmin}
               />
               <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
                 Show warning this many days before expiry
@@ -109,10 +111,12 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          <button onClick={saveSettings} disabled={savingSettings} className="btn btn-primary">
-            {savingSettings ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-            Save Settings
-          </button>
+          {isAdmin && (
+            <button onClick={saveSettings} disabled={savingSettings} className="btn btn-primary">
+              {savingSettings ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+              Save Settings
+            </button>
+          )}
         </motion.div>
       )}
 
