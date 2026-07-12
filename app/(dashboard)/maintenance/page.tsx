@@ -152,7 +152,7 @@ export default function MaintenancePage() {
       <div className="flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-[200px]">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--color-text-muted)' }} />
-          <input className="input pl-8" placeholder="Search description…" onChange={e => setSearch(e.target.value)} />
+          <input className="input" style={{ paddingLeft: '2.25rem' }} placeholder="Search description…" onChange={e => setSearch(e.target.value)} />
         </div>
         <select className="input w-auto min-w-[140px]" value={statusFilter} onChange={e => setStatusFilter(e.target.value as MaintenanceStatus | 'all')}>
           <option value="all">All Statuses</option>
@@ -397,4 +397,5 @@ function CloseMaintenanceModal({ log, onClose, onSubmit, loading }: {
     </div>
   );
 }
+
 

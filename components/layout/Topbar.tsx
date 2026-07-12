@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Bell, Search, Sun, Moon, Plus } from 'lucide-react';
+import { Bell, Search, Sun, Moon, Plus, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { useAppStore } from '@/store/useAppStore';
 import { createClient } from '@/lib/supabase/client';
@@ -11,7 +11,7 @@ import { useState } from 'react';
 import type { Notification } from '@/types';
 
 const PAGE_TITLES: Record<string, string> = {
-  '/': 'Dashboard',
+  '/dashboard': 'Dashboard',
   '/vehicles': 'Vehicle Registry',
   '/drivers': 'Driver & Safety Profiles',
   '/trips': 'Trip Management',
@@ -27,13 +27,20 @@ export default function Topbar() {
   const router = useRouter();
   const { theme, toggleTheme, unreadCount, setUnreadCount, profile } = useAppStore();
   const supabase = createClient();
+  const [signingOut, setSigningOut] = useState(false);
+
+  const handleSignOut = async () => {
+    setSigningOut(true);
+    await supabase.auth.signOut();
+    router.push('/login');
+  };
 
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
   const [recentNotifs, setRecentNotifs] = useState<Notification[]>([]);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const title = Object.entries(PAGE_TITLES).find(([path]) =>
-    path === '/' ? pathname === '/' : pathname.startsWith(path)
+    path === '/dashboard' ? pathname === '/dashboard' || pathname === '/' : pathname.startsWith(path)
   )?.[1] || 'TransitOps';
 
   // Load unread count + recent notifications
@@ -97,8 +104,7 @@ export default function Topbar() {
     <header
       className="flex items-center justify-between px-6 py-3 flex-shrink-0"
       style={{
-        borderBottom: '1px solid var(--color-border)',
-        background: 'var(--color-bg-sidebar)',
+        background: 'var(--color-bg-base)',
         height: 64,
       }}
     >
@@ -123,19 +129,19 @@ export default function Topbar() {
         {/* Theme toggle */}
         <button
           onClick={toggleTheme}
-          className="btn btn-ghost btn-sm w-8 h-8 p-0"
+          className="btn btn-ghost btn-sm w-10 h-10 p-0"
           title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
         >
-          {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+          {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
         </button>
 
         {/* Notifications */}
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setShowNotifDropdown(!showNotifDropdown)}
-            className="btn btn-ghost btn-sm w-8 h-8 p-0 relative"
+            className="btn btn-ghost btn-sm w-10 h-10 p-0 relative"
           >
-            <Bell size={16} />
+            <Bell size={20} />
             {unreadCount > 0 && (
               <span
                 className="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center text-[10px] font-bold rounded-full text-black"
@@ -218,17 +224,28 @@ export default function Topbar() {
           )}
         </div>
 
-        {/* Avatar */}
+        {/* Avatar + logout */}
         {profile && (
-          <div
-            className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
-            style={{
-              background: 'linear-gradient(135deg, #f59e0b, #d97706)',
-              color: '#000',
-            }}
-            title={profile.full_name}
-          >
-            {profile.full_name.charAt(0).toUpperCase()}
+          <div className="flex items-center gap-2">
+            <div
+              className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
+              style={{
+                background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                color: '#000',
+              }}
+              title={profile.full_name}
+            >
+              {profile.full_name.charAt(0).toUpperCase()}
+            </div>
+            <button
+              onClick={handleSignOut}
+              disabled={signingOut}
+              className="btn btn-ghost btn-sm w-10 h-10 p-0"
+              title="Sign Out"
+              style={{ color: 'var(--color-danger)' }}
+            >
+              <LogOut size={20} />
+            </button>
           </div>
         )}
       </div>

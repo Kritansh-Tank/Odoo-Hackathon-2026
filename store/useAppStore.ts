@@ -93,6 +93,12 @@ export const useAppStore = create<AppState>()(
         ratePerKm: state.ratePerKm,
         licenseExpiryWarningDays: state.licenseExpiryWarningDays,
       }),
+      // Re-apply persisted theme to <html> on every page load
+      onRehydrateStorage: () => (state) => {
+        if (state?.theme) {
+          document.documentElement.setAttribute('data-theme', state.theme);
+        }
+      },
     }
   )
 );

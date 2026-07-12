@@ -290,6 +290,7 @@ export default function DashboardPage() {
               Manage drivers →
             </Link>
           </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
             {expiringDrivers.map((driver) => {
               const days = getLicenseDaysUntilExpiry(driver.license_expiry_date);
@@ -362,3 +363,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+

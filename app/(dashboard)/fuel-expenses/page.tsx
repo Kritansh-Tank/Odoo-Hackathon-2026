@@ -314,6 +314,7 @@ export default function FuelExpensesPage() {
                 <label className="label">Description</label>
                 <input className="input" placeholder="Describe the expense…" {...expenseForm.register('description')} />
               </div>
+
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={() => setShowExpenseModal(false)} className="btn btn-secondary flex-1">Cancel</button>
                 <button type="submit" disabled={expenseForm.formState.isSubmitting} className="btn btn-primary flex-1">
@@ -327,3 +328,4 @@ export default function FuelExpensesPage() {
     </div>
   );
 }
+

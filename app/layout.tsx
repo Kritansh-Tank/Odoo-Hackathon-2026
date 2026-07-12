@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import './globals.css';
 import { Toaster } from 'sonner';
 import QueryProvider from '@/components/providers/QueryProvider';
@@ -16,7 +17,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" data-theme="dark" data-scroll-behavior="smooth">
+    <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -26,6 +27,15 @@ export default function RootLayout({
         />
       </head>
       <body>
+        {/* Apply saved theme before first paint — no flash, no hydration mismatch */}
+        <Script
+          id="theme-init"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var s=JSON.parse(localStorage.getItem('transitops-store')||'{}');var t=s.state&&s.state.theme;if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`,
+          }}
+        />
+
         <QueryProvider>
           {children}
         </QueryProvider>
@@ -42,6 +52,8 @@ export default function RootLayout({
           }}
         />
       </body>
+
     </html>
   );
 }
+

@@ -103,7 +103,8 @@ export default function TripsPage() {
       <div className="relative">
         <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--color-text-muted)' }} />
         <input
-          className="input pl-8 max-w-sm"
+          className="input max-w-sm"
+          style={{ paddingLeft: '2.25rem' }}
           placeholder="Search by route or trip number…"
           onChange={e => debouncedSearch(e.target.value)}
         />
@@ -177,6 +178,7 @@ export default function TripsPage() {
                       <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>—</span>
                     )}
                   </td>
+
                   <td>
                     <span className={`badge ${getTripStatusClass(trip.status)}`}>
                       <span className="w-1.5 h-1.5 rounded-full bg-current" />
@@ -232,3 +234,4 @@ export default function TripsPage() {
     </div>
   );
 }
+

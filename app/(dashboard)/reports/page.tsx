@@ -225,7 +225,7 @@ export default function ReportsPage() {
         )}
 
         <p className="text-xs mt-2 text-center" style={{ color: 'var(--color-text-muted)' }}>
-          Hover bars for details · Drag to rotate · Scroll to zoom
+          Hover bars for details Â· Drag to rotate Â· Scroll to zoom
         </p>
       </div>
 
@@ -276,3 +276,4 @@ export default function ReportsPage() {
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
@@ -83,7 +83,7 @@ export default function NotificationsPage() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card py-16 text-center">
           <Bell size={48} className="mx-auto mb-4" style={{ color: 'var(--color-text-muted)' }} />
           <div className="empty-state-title">You&apos;re all caught up!</div>
-          <div className="empty-state-desc">Notifications from trips, maintenance, and license alerts will appear here</div>
+          <div className="empty-state-desc text-center mx-auto max-w-xs">Notifications from trips, maintenance, and license alerts will appear here</div>
         </motion.div>
       ) : (
         <div className="space-y-2">
@@ -125,3 +125,4 @@ export default function NotificationsPage() {
     </div>
   );
 }
+

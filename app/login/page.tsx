@@ -144,7 +144,7 @@ export default function LoginPage() {
 
           {/* Feature list */}
           {[
-            '🚛 Real-time vehicle & driver tracking',
+            '🚚 Real-time vehicle & driver tracking',
             '🤖 AI-powered dispatch risk assessment',
             '⛽ Fuel efficiency & cost analytics',
             '📊 3D visual fleet reports',
@@ -292,6 +292,7 @@ export default function LoginPage() {
                     minLength={mode === 'signup' ? 8 : undefined}
                     required
                   />
+
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
@@ -319,7 +320,7 @@ export default function LoginPage() {
 
             {mode === 'signup' && (
               <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-                🔒 All new accounts are created as <strong style={{ color: 'var(--color-text-secondary)' }}>Employee (Driver)</strong> role. Admins promote roles from the Settings screen.
+                ðŸ”’ All new accounts are created as <strong style={{ color: 'var(--color-text-secondary)' }}>Employee (Driver)</strong> role. Admins promote roles from the Settings screen.
               </p>
             )}
 
@@ -374,3 +375,4 @@ export default function LoginPage() {
     </div>
   );
 }
+

@@ -94,7 +94,8 @@ export default function DriversPage() {
           <div className="relative flex-1 min-w-[200px]">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--color-text-muted)' }} />
             <input
-              className="input pl-8"
+              className="input"
+              style={{ paddingLeft: '2.25rem' }}
               placeholder="Search by name, license, contact…"
               onChange={e => debouncedSearch(e.target.value)}
             />
@@ -241,3 +242,4 @@ export default function DriversPage() {
     </div>
   );
 }
+
