@@ -2,8 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Bell, Search, Sun, Moon, Plus, LogOut } from 'lucide-react';
-import Link from 'next/link';
+import { Bell, Search, Sun, Moon, LogOut } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { createClient } from '@/lib/supabase/client';
 import { formatRelative } from '@/lib/utils';
@@ -120,12 +119,6 @@ export default function Topbar() {
 
       {/* Right actions */}
       <div className="flex items-center gap-3">
-        {/* Quick add trip */}
-        <Link href="/trips?new=1" className="btn btn-primary btn-sm">
-          <Plus size={14} />
-          <span className="hidden sm:inline">New Trip</span>
-        </Link>
-
         {/* Theme toggle */}
         <button
           onClick={toggleTheme}
