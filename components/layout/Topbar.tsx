@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   Bell, Sun, Moon, LogOut, ChevronDown, LayoutDashboard,
-  Car, Users, Route, Wrench, Fuel, BarChart3, Settings
+  Car, Users, Route, Wrench, Fuel, BarChart3, Settings, Truck
 } from 'lucide-react';
 import Link from 'next/link';
 import { useAppStore } from '@/store/useAppStore';
@@ -132,13 +132,30 @@ export default function Topbar() {
         <div className="relative md:hidden" ref={mobileMenuRef}>
           <button
             onClick={() => setShowMobileMenu(!showMobileMenu)}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg font-bold text-base cursor-pointer hover:bg-[var(--color-bg-hover)] transition-colors"
+            className="flex items-center text-left gap-2.5 px-2.5 py-1.5 rounded-xl cursor-pointer hover:bg-[var(--color-bg-hover)] transition-colors"
             style={{ color: 'var(--color-text-primary)' }}
           >
-            <span>TransitOps</span>
+            {/* Logo Icon */}
+            <div
+              className="flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg"
+              style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}
+            >
+              <Truck size={16} className="text-black" />
+            </div>
+
+            {/* Title & Tagline */}
+            <div className="flex flex-col">
+              <span className="font-bold text-sm leading-tight">TransitOps</span>
+              <span className="text-[10px] leading-tight" style={{ color: 'var(--color-text-muted)' }}>
+                Fleet Platform
+              </span>
+            </div>
+
+            {/* Chevron */}
             <ChevronDown
-              size={16}
-              className={`transition-transform duration-200 ${showMobileMenu ? 'rotate-180' : ''}`}
+              size={14}
+              className={`transition-transform duration-200 ml-1 ${showMobileMenu ? 'rotate-180' : ''}`}
+              style={{ color: 'var(--color-text-muted)' }}
             />
           </button>
 
