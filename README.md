@@ -120,14 +120,17 @@ RESEND_FROM_EMAIL=noreply@yourdomain.com
 
 ### 4. Set up the database
 
-Run the SQL migration in your Supabase SQL editor:
+Run the SQL migrations in your Supabase SQL editor (in this order):
 
 ```bash
-# Migration file is at:
-supabase/migrations/001_initial_schema.sql
+# 1. Schema migration file:
+supabase/migrations/20260712000001_initial_schema.sql
+
+# 2. Seed data & role accounts file:
+supabase/migrations/20260712000002_seed_and_admin.sql
 ```
 
-This creates all tables, enums, RLS policies, and seed data.
+This creates all database tables, enums, RLS policies, seed resources, and the 5 demo role users.
 
 ### 5. Start the development server
 
