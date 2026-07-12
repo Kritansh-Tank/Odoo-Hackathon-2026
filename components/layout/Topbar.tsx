@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Bell, Search, Sun, Moon, LogOut } from 'lucide-react';
+import { Bell, Sun, Moon, LogOut, Link } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { createClient } from '@/lib/supabase/client';
 import { formatRelative } from '@/lib/utils';
