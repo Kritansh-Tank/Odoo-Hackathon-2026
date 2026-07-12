@@ -1,0 +1,43 @@
+{
+  "version": 1.1,
+  "atDirectives": [
+    {
+      "name": "@theme",
+      "description": "Tailwind CSS v4 — define theme tokens (design system variables). Replaces `tailwind.config.js` theme section.",
+      "references": [
+        {
+          "name": "Tailwind CSS v4 Docs",
+          "url": "https://tailwindcss.com/docs/theme"
+        }
+      ]
+    },
+    {
+      "name": "@utility",
+      "description": "Tailwind CSS v4 — define custom utility classes.",
+      "references": [
+        {
+          "name": "Tailwind CSS v4 Docs",
+          "url": "https://tailwindcss.com/docs/adding-custom-styles"
+        }
+      ]
+    },
+    {
+      "name": "@variant",
+      "description": "Tailwind CSS v4 — define custom variants.",
+      "references": [
+        {
+          "name": "Tailwind CSS v4 Docs",
+          "url": "https://tailwindcss.com/docs/adding-custom-styles"
+        }
+      ]
+    },
+    {
+      "name": "@source",
+      "description": "Tailwind CSS v4 — explicitly add a source path for content scanning."
+    },
+    {
+      "name": "@import",
+      "description": "CSS @import — also used to import tailwindcss in v4 (`@import \"tailwindcss\"`)."
+    }
+  ]
+}
