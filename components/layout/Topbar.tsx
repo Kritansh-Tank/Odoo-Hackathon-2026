@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { useAppStore } from '@/store/useAppStore';
 import { createClient } from '@/lib/supabase/client';
 import { formatRelative } from '@/lib/utils';
+import { isRouteAllowed } from '@/lib/business-rules';
 import { useState } from 'react';
 import type { Notification } from '@/types';
 
@@ -178,7 +179,7 @@ export default function Topbar() {
                 { href: '/reports', icon: BarChart3, label: 'Reports' },
                 { href: '/notifications', icon: Bell, label: 'Notifications' },
                 { href: '/settings', icon: Settings, label: 'Settings' },
-              ].map(({ href, icon: Icon, label }) => {
+              ].filter(({ href }) => isRouteAllowed(profile?.role, href)).map(({ href, icon: Icon, label }) => {
                 const active = pathname === href || pathname.startsWith(href + '/');
                 return (
                   <Link

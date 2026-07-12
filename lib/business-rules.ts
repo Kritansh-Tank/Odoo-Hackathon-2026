@@ -206,3 +206,55 @@ export function calculateFleetUtilization(onTripCount: number, totalActive: numb
   if (totalActive === 0) return 0;
   return Math.round((onTripCount / totalActive) * 100);
 }
+
+/**
+ * RBAC access validator for the UI routing paths
+ */
+export function isRouteAllowed(role: string | undefined, path: string): boolean {
+  if (!role) return false;
+  if (role === 'admin') return true; // Admins can access everything
+
+  const normalized = path.replace(/\/$/, ''); // Remove trailing slash
+
+  if (role === 'fleet_manager') {
+    // Managers can access everything except Reports
+    return !normalized.startsWith('/reports');
+  }
+
+  if (role === 'safety_officer') {
+    // Safety officers can only access Dashboard, Drivers, Notifications, and Settings
+    return (
+      normalized === '' ||
+      normalized === '/dashboard' ||
+      normalized.startsWith('/drivers') ||
+      normalized.startsWith('/notifications') ||
+      normalized.startsWith('/settings')
+    );
+  }
+
+  if (role === 'financial_analyst') {
+    // Financial analysts can only access Dashboard, Fuel-Expenses, Reports, Notifications, and Settings
+    return (
+      normalized === '' ||
+      normalized === '/dashboard' ||
+      normalized.startsWith('/fuel-expenses') ||
+      normalized.startsWith('/reports') ||
+      normalized.startsWith('/notifications') ||
+      normalized.startsWith('/settings')
+    );
+  }
+
+  if (role === 'driver') {
+    // Drivers can only access Dashboard, Trips, Fuel-Expenses, Notifications, and Settings
+    return (
+      normalized === '' ||
+      normalized === '/dashboard' ||
+      normalized.startsWith('/trips') ||
+      normalized.startsWith('/fuel-expenses') ||
+      normalized.startsWith('/notifications') ||
+      normalized.startsWith('/settings')
+    );
+  }
+
+  return false;
+}

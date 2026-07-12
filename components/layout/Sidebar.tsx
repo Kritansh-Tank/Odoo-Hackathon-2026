@@ -8,6 +8,7 @@ import {
   Fuel, BarChart3, Bell, Settings, ChevronLeft, ChevronRight,
 } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
+import { isRouteAllowed } from '@/lib/business-rules';
 
 const NAV_ITEMS = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -91,7 +92,7 @@ export default function Sidebar() {
 
       {/* Nav */}
       <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-0.5">
-        {NAV_ITEMS.map(({ href, icon: Icon, label }) => {
+        {NAV_ITEMS.filter(({ href }) => isRouteAllowed(profile?.role, href)).map(({ href, icon: Icon, label }) => {
           const active = isActive(href);
           const isNotif = href === '/notifications';
           return (
