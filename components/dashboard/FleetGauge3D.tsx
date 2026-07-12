@@ -1,10 +1,5 @@
 'use client';
 
-import { useRef, useEffect, Suspense } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Text, OrbitControls } from '@react-three/drei';
-import * as THREE from 'three';
-
 interface Segment {
   status: string;
   count: number;
@@ -16,98 +11,113 @@ interface GaugeProps {
   segments: Segment[];
 }
 
-function DonutSegments({ segments }: { segments: Segment[] }) {
-  const groupRef = useRef<THREE.Group>(null);
+export default function FleetGauge3D({ utilization, segments }: GaugeProps) {
   const total = segments.reduce((sum, s) => sum + s.count, 0) || 1;
 
-  useFrame((state) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.15;
-    }
-  });
+  // Build SVG donut arcs
+  const size = 180;
+  const cx = size / 2;
+  const cy = size / 2;
+  const r = 68;
+  const innerR = 46;
+  const strokeWidth = r - innerR;
+  const circumference = 2 * Math.PI * (r - strokeWidth / 2);
 
-  const meshes: React.ReactNode[] = [];
-  let currentAngle = -Math.PI / 2;
+  let cumulativePercent = 0;
 
-  segments.forEach((seg, i) => {
-    if (seg.count === 0) return;
-    const angle = (seg.count / total) * Math.PI * 2;
-    const geometry = new THREE.TorusGeometry(1.8, 0.55, 12, 64, angle);
-    meshes.push(
-      <mesh
-        key={seg.status}
-        ref={undefined}
-        geometry={geometry}
-        rotation={[0, 0, currentAngle]}
-        position={[0, 0, i * 0.01]}
-      >
-        <meshStandardMaterial
-          color={seg.color}
-          roughness={0.2}
-          metalness={0.4}
-          emissive={seg.color}
-          emissiveIntensity={0.12}
-        />
-      </mesh>
-    );
-    currentAngle += angle;
-  });
+  const arcs = segments
+    .filter((s) => s.count > 0)
+    .map((seg) => {
+      const pct = seg.count / total;
+      const startAngle = cumulativePercent * 360 - 90;
+      const endAngle = (cumulativePercent + pct) * 360 - 90;
+      cumulativePercent += pct;
 
-  return <group ref={groupRef}>{meshes}</group>;
-}
+      const toRad = (deg: number) => (deg * Math.PI) / 180;
+      const x1 = cx + r * Math.cos(toRad(startAngle));
+      const y1 = cy + r * Math.sin(toRad(startAngle));
+      const x2 = cx + r * Math.cos(toRad(endAngle));
+      const y2 = cy + r * Math.sin(toRad(endAngle));
 
-function UtilizationText({ utilization }: { utilization: number }) {
-  return (
-    <>
-      <Text
-        position={[0, 0.15, 0]}
-        fontSize={0.5}
-        color="#f0f0ff"
-        anchorX="center"
-        anchorY="middle"
-        font={undefined}
-      >
-        {utilization}%
-      </Text>
-      <Text
-        position={[0, -0.25, 0]}
-        fontSize={0.18}
-        color="#9090b0"
-        anchorX="center"
-        anchorY="middle"
-      >
-        UTILIZATION
-      </Text>
-    </>
-  );
-}
+      const ix1 = cx + innerR * Math.cos(toRad(startAngle));
+      const iy1 = cy + innerR * Math.sin(toRad(startAngle));
+      const ix2 = cx + innerR * Math.cos(toRad(endAngle));
+      const iy2 = cy + innerR * Math.sin(toRad(endAngle));
 
-export default function FleetGauge3D({ utilization, segments }: GaugeProps) {
+      const largeArc = pct > 0.5 ? 1 : 0;
+
+      const d = [
+        `M ${x1} ${y1}`,
+        `A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2}`,
+        `L ${ix2} ${iy2}`,
+        `A ${innerR} ${innerR} 0 ${largeArc} 0 ${ix1} ${iy1}`,
+        'Z',
+      ].join(' ');
+
+      return { d, color: seg.color, status: seg.status, count: seg.count };
+    });
+
+  // If no segments with data, show empty ring
+  const isEmpty = arcs.length === 0;
+
   return (
     <div>
-      <div style={{ height: 200 }} className="canvas-wrapper">
-        <Canvas
-          camera={{ position: [0, 0, 5.5], fov: 40 }}
-          style={{ background: 'transparent' }}
-        >
-          <ambientLight intensity={0.6} />
-          <pointLight position={[5, 5, 5]} intensity={1.2} color="#f59e0b" />
-          <pointLight position={[-5, -5, -5]} intensity={0.4} color="#3b82f6" />
-          <Suspense fallback={null}>
-            <DonutSegments segments={segments} />
-            <UtilizationText utilization={utilization} />
-          </Suspense>
-          <OrbitControls
-            enableZoom={false}
-            enablePan={false}
-            autoRotate
-            autoRotateSpeed={0.8}
-          />
-        </Canvas>
+      <div className="flex items-center justify-center" style={{ height: 180 }}>
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ overflow: 'visible' }}>
+          {isEmpty ? (
+            <circle
+              cx={cx}
+              cy={cy}
+              r={(r + innerR) / 2}
+              fill="none"
+              stroke="var(--color-border)"
+              strokeWidth={strokeWidth}
+            />
+          ) : (
+            arcs.map((arc) => (
+              <path
+                key={arc.status}
+                d={arc.d}
+                fill={arc.color}
+                opacity={0.92}
+              />
+            ))
+          )}
+
+          {/* Center text */}
+          <text
+            x={cx}
+            y={cy - 8}
+            textAnchor="middle"
+            dominantBaseline="middle"
+            style={{
+              fontSize: 26,
+              fontWeight: 700,
+              fill: 'var(--color-text-primary)',
+              fontFamily: 'Inter, sans-serif',
+            }}
+          >
+            {utilization}%
+          </text>
+          <text
+            x={cx}
+            y={cy + 14}
+            textAnchor="middle"
+            dominantBaseline="middle"
+            style={{
+              fontSize: 10,
+              fill: 'var(--color-text-muted)',
+              letterSpacing: 1.5,
+              fontFamily: 'Inter, sans-serif',
+            }}
+          >
+            UTILIZATION
+          </text>
+        </svg>
       </div>
 
       {/* Legend */}
-      <div className="mt-4 grid grid-cols-2 gap-2">
+      <div className="mt-3 grid grid-cols-2 gap-2">
         {segments.map((seg) => (
           <div key={seg.status} className="flex items-center gap-2">
             <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: seg.color }} />
