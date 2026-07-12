@@ -217,8 +217,8 @@ export function isRouteAllowed(role: string | undefined, path: string): boolean 
   const normalized = path.replace(/\/$/, ''); // Remove trailing slash
 
   if (role === 'fleet_manager') {
-    // Managers can access everything except Reports
-    return !normalized.startsWith('/reports');
+    // Managers can access all modules (Reports, Vehicles, Drivers, Trips, etc.)
+    return true;
   }
 
   if (role === 'safety_officer') {
