@@ -385,14 +385,19 @@ export default function LandingPage() {
       {/* ─── FOOTER ────────────────────────────────────────────────── */}
       <footer className="mt-auto py-12 border-t z-10 relative" style={{ borderColor: 'var(--color-border)' }}>
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <div
-              className="flex items-center justify-center w-7 h-7 rounded-lg"
+              className="flex items-center justify-center w-8 h-8 rounded-lg"
               style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}
             >
-              <Truck size={14} className="text-black" />
+              <Truck size={15} className="text-black" />
             </div>
-            <span className="font-bold text-xs">TransitOps</span>
+            <div className="flex flex-col">
+              <span className="font-bold text-xs leading-none">TransitOps</span>
+              <span className="text-[9px] leading-none mt-1" style={{ color: 'var(--color-text-muted)' }}>
+                Fleet Platform
+              </span>
+            </div>
           </div>
 
           <div className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>
