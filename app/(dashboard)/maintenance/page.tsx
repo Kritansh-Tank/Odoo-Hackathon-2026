@@ -270,7 +270,7 @@ export default function MaintenancePage() {
                 </div>
                 <h2 className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>Create Maintenance Record</h2>
               </div>
-              <button onClick={() => setShowModal(false)} className="btn btn-ghost btn-sm w-8 h-8 p-0"><X size={16} /></button>
+              <button onClick={() => setShowModal(false)} className="btn btn-ghost w-8 h-8 p-0" style={{ padding: 0 }}><X size={20} /></button>
             </div>
 
             <div className="alert alert-warning mx-6 mt-4">
@@ -367,7 +367,7 @@ function CloseMaintenanceModal({ log, onClose, onSubmit, loading }: {
       <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="modal-content" style={{ maxWidth: 440 }}>
         <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--color-border)' }}>
           <h2 className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>Close Maintenance</h2>
-          <button onClick={onClose} className="btn btn-ghost btn-sm w-8 h-8 p-0"><X size={16} /></button>
+          <button onClick={onClose} className="btn btn-ghost w-8 h-8 p-0" style={{ padding: 0 }}><X size={20} /></button>
         </div>
         <div className="px-6 py-5 space-y-4">
           <div className="alert alert-info">

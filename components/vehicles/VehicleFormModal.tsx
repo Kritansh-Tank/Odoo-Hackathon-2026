@@ -106,8 +106,8 @@ export default function VehicleFormModal({ vehicle, onClose, onSuccess }: Props)
                 {isEdit ? 'Edit Vehicle' : 'Register Vehicle'}
               </h2>
             </div>
-            <button onClick={onClose} className="btn btn-ghost btn-sm w-8 h-8 p-0">
-              <X size={16} />
+            <button onClick={onClose} className="btn btn-ghost w-8 h-8 p-0" style={{ padding: 0 }}>
+              <X size={20} />
             </button>
           </div>
 

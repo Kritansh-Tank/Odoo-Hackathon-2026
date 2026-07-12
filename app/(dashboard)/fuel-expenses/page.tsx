@@ -217,7 +217,7 @@ export default function FuelExpensesPage() {
                 </div>
                 <h2 className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>Log Fuel</h2>
               </div>
-              <button onClick={() => setShowFuelModal(false)} className="btn btn-ghost btn-sm w-8 h-8 p-0"><X size={16} /></button>
+              <button onClick={() => setShowFuelModal(false)} className="btn btn-ghost w-8 h-8 p-0" style={{ padding: 0 }}><X size={20} /></button>
             </div>
             <form onSubmit={fuelForm.handleSubmit(onFuelSubmit)} className="px-6 py-5 space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -282,7 +282,7 @@ export default function FuelExpensesPage() {
                 </div>
                 <h2 className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>Add Expense</h2>
               </div>
-              <button onClick={() => setShowExpenseModal(false)} className="btn btn-ghost btn-sm w-8 h-8 p-0"><X size={16} /></button>
+              <button onClick={() => setShowExpenseModal(false)} className="btn btn-ghost w-8 h-8 p-0" style={{ padding: 0 }}><X size={20} /></button>
             </div>
             <form onSubmit={expenseForm.handleSubmit(onExpenseSubmit)} className="px-6 py-5 space-y-4">
               <div className="grid grid-cols-2 gap-4">

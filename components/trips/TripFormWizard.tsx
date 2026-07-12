@@ -171,7 +171,7 @@ export default function TripFormWizard({ onClose, onSuccess }: { onClose: () => 
             </div>
             <h2 className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>Create & Dispatch Trip</h2>
           </div>
-          <button onClick={onClose} className="btn btn-ghost btn-sm w-8 h-8 p-0"><X size={16} /></button>
+          <button onClick={onClose} className="btn btn-ghost w-8 h-8 p-0" style={{ padding: 0 }}><X size={20} /></button>
         </div>
 
         {/* Step indicator */}

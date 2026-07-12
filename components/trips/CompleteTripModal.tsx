@@ -69,7 +69,7 @@ export default function CompleteTripModal({ trip, onClose, onSuccess }: {
               <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{trip.trip_number} · {trip.source} → {trip.destination}</p>
             </div>
           </div>
-          <button onClick={onClose} className="btn btn-ghost btn-sm w-8 h-8 p-0"><X size={16} /></button>
+          <button onClick={onClose} className="btn btn-ghost w-8 h-8 p-0" style={{ padding: 0 }}><X size={20} /></button>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="px-6 py-5 space-y-4">

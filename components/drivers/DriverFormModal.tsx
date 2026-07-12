@@ -100,7 +100,7 @@ export default function DriverFormModal({ driver, onClose, onSuccess }: Props) {
                 {isEdit ? 'Edit Driver' : 'Add Driver'}
               </h2>
             </div>
-            <button onClick={onClose} className="btn btn-ghost btn-sm w-8 h-8 p-0"><X size={16} /></button>
+            <button onClick={onClose} className="btn btn-ghost w-8 h-8 p-0" style={{ padding: 0 }}><X size={20} /></button>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="px-6 py-5 space-y-4">
