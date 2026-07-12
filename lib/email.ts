@@ -61,7 +61,7 @@ export function buildLicenseReminderHtml(
     <!-- Header -->
     <div style="background:linear-gradient(135deg,#f59e0b,#d97706);padding:32px 32px 24px;text-align:center;">
       <div style="font-size:28px;font-weight:900;color:#000;letter-spacing:-1px;">TransitOps</div>
-      <div style="font-size:13px;color:rgba(0,0,0,0.7);margin-top:4px;">Smart Transport Operations</div>
+      <div style="font-size:13px;color:rgba(0,0,0,0.7);margin-top:4px;">Fleet Platform</div>
     </div>
     
     <!-- Urgency Banner -->

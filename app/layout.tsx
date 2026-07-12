@@ -5,7 +5,7 @@ import { Toaster } from 'sonner';
 import QueryProvider from '@/components/providers/QueryProvider';
 
 export const metadata: Metadata = {
-  title: 'TransitOps — Smart Transport Operations Platform',
+  title: 'TransitOps — Fleet Platform',
   description:
     'Digitize your transport operations: vehicle registry, driver management, trip dispatch, maintenance, fuel tracking, and analytics.',
   keywords: ['fleet management', 'transport operations', 'logistics', 'dispatch'],

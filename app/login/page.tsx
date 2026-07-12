@@ -114,7 +114,7 @@ export default function LoginPage() {
               TransitOps
             </div>
             <div className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-              Smart Transport Operations
+              Fleet Platform
             </div>
           </div>
         </div>
