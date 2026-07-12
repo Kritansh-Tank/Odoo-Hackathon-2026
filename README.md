@@ -57,6 +57,14 @@ TransitOps digitizes and streamlines transport fleet operations — from vehicle
 9. Creating maintenance sets vehicle → **In Shop**
 10. Closing maintenance sets vehicle → **Available**
 
+### 💎 Premium UX & Security Enhancements
+
+- **🎨 Interactive Landing Page** (`/` root): Features dynamic HSL styling, glowing ambient backdrops, an interactive accordion showcasing the 5 RBAC roles and their privileges, and links for instant launch.
+- **⚡ Quick Demo Login Selector**: Built a click-to-fill button grid on the `/login` page to easily authenticate as any of the 5 pre-seeded role accounts with a single click.
+- **🔒 Page & Query-Level RBAC Guards**: Integrates route validators (`isRouteAllowed`) that prevent direct URL bar bypass by rendering a custom "Access Restricted" warning screen. Operates alongside query-level profile filtering (e.g. Drivers only fetch and aggregate their own logged fuel logs and trips).
+- **📱 Mobile-Native Navigation**: Sidebar hides automatically on mobile devices and is replaced by a sticky top header with brand details, tagline, and chevron dropdown to maximize content screen space.
+- **🌌 Escaped Modals Context**: Utilizes React Portals (`ModalPortal.tsx`) to render modals outside the dashboard layout stacking context directly into `document.body` for perfect overlays.
+
 ---
 
 ## 🛠️ Tech Stack
