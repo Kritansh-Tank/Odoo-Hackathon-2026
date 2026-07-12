@@ -182,7 +182,7 @@ export default function LandingPage() {
               <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
               <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
               <div className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
-              <div className="text-[10px] mx-auto" style={{ color: 'var(--color-text-muted)' }}>transitops.vercel.app/dashboard</div>
+              <div className="text-[10px] mx-auto" style={{ color: 'var(--color-text-muted)' }}>transitops-dusky.vercel.app/dashboard</div>
             </div>
             
             {/* Visual Bento Grid Mock layout placeholder inside the browser wrapper */}
