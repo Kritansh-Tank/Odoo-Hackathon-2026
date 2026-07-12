@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Loader2, CheckCircle } from 'lucide-react';
+import ModalPortal from '@/components/ui/ModalPortal';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -53,7 +54,8 @@ export default function CompleteTripModal({ trip, onClose, onSuccess }: {
   };
 
   return (
-    <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+    <ModalPortal>
+      <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -111,6 +113,7 @@ export default function CompleteTripModal({ trip, onClose, onSuccess }: {
           </div>
         </form>
       </motion.div>
-    </div>
+      </div>
+    </ModalPortal>
   );
 }

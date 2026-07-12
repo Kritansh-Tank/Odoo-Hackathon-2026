@@ -10,6 +10,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
+import ModalPortal from '@/components/ui/ModalPortal';
 
 const fuelSchema = z.object({
   vehicle_id: z.string().min(1, 'Required'),
@@ -208,6 +209,7 @@ export default function FuelExpensesPage() {
 
       {/* Fuel Modal */}
       {showFuelModal && (
+        <ModalPortal>
         <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setShowFuelModal(false)}>
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="modal-content">
             <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--color-border)' }}>
@@ -269,10 +271,12 @@ export default function FuelExpensesPage() {
             </form>
           </motion.div>
         </div>
+        </ModalPortal>
       )}
 
       {/* Expense Modal */}
       {showExpenseModal && (
+        <ModalPortal>
         <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setShowExpenseModal(false)}>
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="modal-content">
             <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--color-border)' }}>
@@ -324,6 +328,7 @@ export default function FuelExpensesPage() {
             </form>
           </motion.div>
         </div>
+        </ModalPortal>
       )}
     </div>
   );

@@ -10,6 +10,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
+import ModalPortal from '@/components/ui/ModalPortal';
 
 const formSchema = z.object({
   vehicle_id: z.string().min(1, 'Select a vehicle'),
@@ -261,6 +262,7 @@ export default function MaintenancePage() {
 
       {/* Create Modal */}
       {showModal && (
+        <ModalPortal>
         <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setShowModal(false)}>
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="modal-content">
             <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--color-border)' }}>
@@ -338,6 +340,7 @@ export default function MaintenancePage() {
             </form>
           </motion.div>
         </div>
+        </ModalPortal>
       )}
 
       {/* Close Maintenance Modal */}
@@ -363,6 +366,7 @@ function CloseMaintenanceModal({ log, onClose, onSubmit, loading }: {
   const [finalCost, setFinalCost] = useState(log.cost);
 
   return (
+    <ModalPortal>
     <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
       <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="modal-content" style={{ maxWidth: 440 }}>
         <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--color-border)' }}>
@@ -395,6 +399,7 @@ function CloseMaintenanceModal({ log, onClose, onSubmit, loading }: {
         </div>
       </motion.div>
     </div>
+    </ModalPortal>
   );
 }
 
