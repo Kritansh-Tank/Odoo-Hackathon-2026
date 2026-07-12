@@ -185,7 +185,7 @@ transitops/
 │   │   ├── trips/               # Trip management + [id] detail
 │   │   ├── maintenance/         # Maintenance log management
 │   │   ├── fuel-expenses/       # Fuel & expense tracking
-│   │   ├── reports/             # Analytics + export
+│   │   ├── reports/             # Analytics
 │   │   ├── notifications/       # Notification center
 │   │   └── settings/            # RBAC + system settings
 │   ├── api/
@@ -197,6 +197,9 @@ transitops/
 │   │       ├── dispatch/
 │   │       ├── complete/
 │   │       └── cancel/
+│   ├── auth/
+│   │   └── callback/
+│   │       └── route.ts         # Supabase auth exchange handler
 │   ├── login/                   # Auth page
 │   └── globals.css              # Tailwind v4 design tokens
 ├── components/
@@ -216,9 +219,14 @@ transitops/
 │   └── useAppStore.ts           # Zustand: theme, sidebar, settings
 ├── types/
 │   └── index.ts                 # TypeScript interfaces
-└── supabase/
-    └── migrations/
-        └── 001_initial_schema.sql
+├── supabase/
+│   └── migrations/
+│       ├── 20260712000001_initial_schema.sql  # Database schema tables & enums
+│       └── 20260712000002_seed_and_admin.sql    # Seed data & demo accounts
+├── vercel.json                  # Vercel deployment settings & timeouts
+├── .vercelignore                # Vercel bundle exclusions
+├── next.config.ts               # Next.js bundler settings
+└── .env.example                 # Environment configuration template
 ```
 
 ---

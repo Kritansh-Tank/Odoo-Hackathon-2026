@@ -14,9 +14,6 @@
     },
     "app/api/ai/license-reminder/route.ts": {
       "maxDuration": 30
-    },
-    "app/api/reports/export-pdf/route.ts": {
-      "maxDuration": 60
     }
   },
   "headers": [
