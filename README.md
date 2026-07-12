@@ -24,8 +24,6 @@ TransitOps digitizes and streamlines transport fleet operations — from vehicle
 
 ## User Interface
 
-### Home
- 
 ![Home](assets/home.png)
 
 ---
@@ -219,9 +217,10 @@ transitops/
 │   ├── login/                   # Auth page
 │   └── globals.css              # Tailwind v4 design tokens
 ├── components/
-│   ├── dashboard/               # KPICard, FleetGauge (2D SVG donut)
+│   ├── dashboard/               # KPICard, FleetGauge3D (3D Fiber gauge)
 │   ├── drivers/                 # DriverFormModal
 │   ├── layout/                  # Sidebar, Topbar
+│   ├── providers/               # QueryProvider (React Query wrapper)
 │   ├── trips/                   # TripFormWizard, CompleteTripModal
 │   ├── ui/                      # ModalPortal (React Portal helper)
 │   └── vehicles/                # VehicleFormModal
