@@ -155,7 +155,8 @@ export default function SettingsPage() {
                     </span>
                   ) : (
                     <select
-                      className="input w-auto text-xs"
+                      className="input text-xs flex-shrink-0"
+                      style={{ width: '160px' }}
                       value={u.role}
                       onChange={e => changeRole(u.id, e.target.value as Profile['role'])}
                     >
