@@ -329,6 +329,27 @@ All TypeScript checks pass. No build errors.
 
 > **AI route timeouts:** Groq API calls are given 30 s; the PDF export route gets 60 s. These are set in `vercel.json`.
 
+## 🔮 Future Roadmap: Multi-Tenancy (SaaS)
+
+If time had permitted, TransitOps would be scaled into a **Multi-Tenant Software-as-a-Service (SaaS)** platform to support multiple shipping organizations simultaneously. The blueprint for this implementation is outlined below:
+
+### 1. Database Tenant Isolation (Supabase RLS)
+- **Tenant Definition**: Create an `organizations` table (`id`, `name`, `slug`, `created_at`) to define company tenants (e.g. ABC Logi vs XYZ Cargo).
+- **Foreign Key Linkage**: Add an `org_id UUID REFERENCES organizations(id)` column to `profiles`, `vehicles`, `drivers`, `trips`, `maintenance_logs`, `expenses`, and `fuel_logs`.
+- **Database Row Level Security**: Rewrite RLS policies to check the active user's company membership, completely isolating data queries between tenants at the PostgreSQL engine level:
+  ```sql
+  CREATE POLICY "tenant_isolation" ON vehicles
+    FOR ALL TO authenticated
+    USING (org_id = (SELECT org_id FROM profiles WHERE id = auth.uid()));
+  ```
+
+### 2. Organizational Signup & Invitation Logic
+- **Invite Codes**: System administrators can generate invite codes or domain-whitelisted referral links (e.g., `@abc-cargo.com`) that automatically link employees (Drivers, Safety Officers) to the correct `org_id` on signup.
+- **Enterprise Creation**: A dedicated signup route where a new business owner can register their business, spawning a new row in `organizations` and mapping their first admin profile.
+
+### 3. Namespace & Subdomain Routing
+- **Tenant Subdomains**: Configure dynamic routing middleware to extract the subdomain (e.g., `abc.transitops-dusky.vercel.app`) to serve tenant-specific assets, CSS branding colors, and login portals.
+
 ---
 
 ## 📄 License
